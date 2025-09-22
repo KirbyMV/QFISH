@@ -1,0 +1,27 @@
+---
+title: "QFISH"
+output: html_document
+date: "2025-09-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+load data
+
+```{r}
+data <- read.csv("../data/QFISH_data_v2.csv", header = T, na.strings = "")
+```
+
+clean up data. variables: year, species group, location, value
+```{r}
+data1 <- data[c(-1,-2,-28),c(-13,-26,-40,-54,-55)]
+
+clean_data <- data1 %>% pivot_longer(cols = 2:50, names_to = c("SpeciesGroup","Area"), values_to = "Catch", names_pattern = "(.+)_(.+)", values_drop_na = T) 
+```
+

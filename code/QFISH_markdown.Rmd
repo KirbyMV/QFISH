@@ -56,7 +56,7 @@ We want to make a faceted line plot. Facets are the locations, x-axis is time, y
                     "Sunshine.Coast.South...Bribie.Island" = "South Sunshine Coast & Bribie Island",
 "Townsville" = "Townsville",
 "Bundaberg" = "Bundaberg",
-"Gladstone" = "Gladstone")
+"Gladstone" = "Gladstone") #Change the location names from periods to normal text
 
 clean_data %>% ggplot() +
   theme_bw() +
@@ -66,5 +66,34 @@ clean_data %>% ggplot() +
   scale_x_discrete(breaks = c(2001,2005,2010,2015,2020,2025)) +
    theme(axis.text.x = element_text(angle = 45, hjust = 1),
           strip.text = element_text(size = 5))
+```
+Unfortunately this plot is too condensed to really get any information out of it, so instead I will focus on one location.
+
+```{r}
+townsville_data <- clean_data %>% filter(Location == "Townsville") #Take only the data from Townsville
+
+ townsville_data$SpeciesGroup <- factor(townsville_data$SpeciesGroup, levels = c("Shark","Other","Turtle","Mammal")) #Reorder the species group so the legend is in an intuitive order
+
+plot2 <- townsville_data %>% ggplot() +
+  theme_bw() +
+    geom_line(mapping = aes(x = Year,y = Catch, group = SpeciesGroup, color = SpeciesGroup), size = 1) +
+   geom_point(mapping = aes(x = Year,y = Catch, group = SpeciesGroup, color = SpeciesGroup, shape = SpeciesGroup), size = 3) +
+  scale_y_log10() + #use a log scale because a normal scale does not show the difference between turtle and mammal
+  scale_x_discrete(breaks = c(2001,2005,2010,2015,2020,2025)) +
+  labs(title = "Townsville", color = "Species Group", shape = "Species Group") +
+   theme(axis.text.x = element_text(angle = 0, hjust = 0.5, size = 10),
+         axis.text.y = element_text(size = 10),
+         axis.title = element_text(size = 15),
+          strip.text = element_text(size = 5),
+         plot.title = element_text(hjust = 0.5, size = 20)) +
+   scale_color_manual(values=c("darkgreen", "purple", "darkblue","orange")) +
+  scale_shape_manual(values = c(15:19))
+  
+
+plot2
+```
+Save this plot
+```{r}
+ggsave("../output/Catch_plot.png")
 ```
 

@@ -1,16 +1,25 @@
 ---
-title: "QFISH"
+title: "QFISH Report"
 output: html_document
 date: "2025-09-22"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
+# Obtain data
+
+Catch data was obtained from [QFISH Shark Control program](https://qfish.fisheries.qld.gov.au/).
+
+Download the data into your data folder.
+
+Open the data in excel first and combine rows two and three into the first row. Separate the species group from the location using an underscore. This will make it easier to tidy within R.
+
+
 # Load data and tidy it
 
 Load tidyverse.
-```{r, results = "hide"}
+```{r, message=FALSE}
 library(tidyverse)
 ```
 
@@ -33,7 +42,7 @@ head(data1)
 
 Pivot the data so the species group and location are columns. Then separate the species and location using the name pattern, and change the catch to numeric values.
 ```{r}
-clean_data <- data1 %>% pivot_longer(cols = 2:50, names_to = c("SpeciesGroup","Location"), values_to = "Catch", names_pattern = "(.+)_(.+)", values_drop_na = T) 
+clean_data <- data1 %>% pivot_longer(cols = 2:50, names_to = c("SpeciesGroup","Location"), values_to = "Catch", names_pattern = "(.+)_(.+)", values_drop_na = T) #species group and location are separated by _ so we can use a regex code in names_pattern
 
 clean_data$Catch <- as.numeric(as.character(clean_data$Catch))
 
@@ -67,7 +76,8 @@ clean_data %>% ggplot() +
    theme(axis.text.x = element_text(angle = 45, hjust = 1),
           strip.text = element_text(size = 5))
 ```
-Unfortunately this plot is too condensed to really get any information out of it, so instead I will focus on one location.
+
+Unfortunately this plot is too condensed to really get any information out of it, so instead focus on one location.
 
 ```{r}
 townsville_data <- clean_data %>% filter(Location == "Townsville") #Take only the data from Townsville
@@ -92,7 +102,9 @@ plot2 <- townsville_data %>% ggplot() +
 
 plot2
 ```
-Save this plot
+
+Save this plot to your output folder.
+
 ```{r}
 ggsave("../output/Catch_plot.png")
 ```
